@@ -33,7 +33,7 @@ class TestLeafNode(unittest.TestCase):
         self.assertEqual(node.to_html(), 'This is a paragraph')
 
     def test_init_no_value(self):
-        self.assertRaises(ValueError, LeafNode, "p", None, {"class": "paragraph"})
+        self.assertEqual(LeafNode("p", None, {"class": "paragraph"}).value, '')
 
 class TestParentNode(unittest.TestCase):
     def test_init(self):
