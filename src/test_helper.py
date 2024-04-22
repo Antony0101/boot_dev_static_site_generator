@@ -1,6 +1,6 @@
 import unittest
 from textnode import TextNode
-from helper import text_node_to_html_node, split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image
+from helper import text_node_to_html_node, split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image,split_nodes_link
 from htmlnode import LeafNode
 
 class TestTextToHtml(unittest.TestCase):
@@ -77,3 +77,21 @@ class TestSplitNodesImage(unittest.TestCase):
             ),
         ]
         self.assertEqual(split_nodes_image(nodes), resultnodes)
+
+class TestSplitNodesLink(unittest.TestCase):
+    def test_split_nodes_link(self):
+        nodes = [TextNode("This is a [link1](https://example.com/link1) node", "text")]
+        resultnodes = [TextNode("This is a ", "text"), TextNode("link1", "link", "https://example.com/link1"), TextNode(" node", "text")]
+        self.assertEqual(split_nodes_link(nodes), resultnodes)
+    
+    def test_split_nodes_link_2(self):
+        nodes = [TextNode("This is text with a [link](https://www.example.com) and another [second link](https://www.example.com/another)","text",)]
+        resultnodes = [
+            TextNode("This is text with a ", "text"),
+            TextNode("link", "link", "https://www.example.com"),
+            TextNode(" and another ", "text"),
+            TextNode(
+                "second link", "link", "https://www.example.com/another"
+            ),
+        ]
+        self.assertEqual(split_nodes_link(nodes), resultnodes)
