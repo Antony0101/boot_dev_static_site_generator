@@ -47,8 +47,6 @@ class TestParentNode(unittest.TestCase):
 
     def test_to_html(self):
         node = ParentNode("div", [LeafNode("p", "This is a paragraph")], {"class": "container"})
-        print(node)
-        print(node.to_html())
         self.assertEqual(node.to_html(), '<div class="container"><p >This is a paragraph</p></div>')
 
     def test_to_html_no_tag(self):
