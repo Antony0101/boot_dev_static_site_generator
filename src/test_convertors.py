@@ -1,6 +1,6 @@
 import unittest
 from textnode import TextNode
-from convertors import text_node_to_html_node
+from convertors import text_node_to_html_node, markdown_to_blocks
 from htmlnode import LeafNode
 
 
@@ -28,6 +28,19 @@ class TestTextToHtml(unittest.TestCase):
     def test_text_to_html_image(self):
         text_node = TextNode("This is a text node", "image", "https://example.com")
         self.assertEqual(text_node_to_html_node(text_node), LeafNode("img", None, {"src": "https://example.com", "alt": "This is a text node"}))
+
+
+class TestMarkdownToBlocks(unittest.TestCase):
+    def test_markdown_to_blocks(self):
+        markdown =  '''
+# This is a heading
+
+This is a paragraph of text. It has some **bold** and *italic* words inside of it.
+
+* This is a list item
+* This is another list item
+'''
+        self.assertEqual(markdown_to_blocks(markdown), ["# This is a heading", "This is a paragraph of text. It has some **bold** and *italic* words inside of it.","* This is a list item\n* This is another list item"])
 
 if __name__ == "__main__":
     unittest.main()
