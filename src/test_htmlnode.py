@@ -1,6 +1,6 @@
 import unittest
 
-from htmlnode import HTMLNode,LeafNode
+from htmlnode import HTMLNode,LeafNode,ParentNode
 
 class TestHTMLNode(unittest.TestCase):
     def test_to_html(self):
@@ -34,6 +34,29 @@ class TestLeafNode(unittest.TestCase):
 
     def test_init_no_value(self):
         self.assertRaises(ValueError, LeafNode, "p", None, {"class": "paragraph"})
+
+class TestParentNode(unittest.TestCase):
+    def test_init(self):
+        node = ParentNode("div", [LeafNode("p", "This is a paragraph")], {"class": "container"})
+        self.assertEqual(node.tag, "div")
+        self.assertIsNone(node.value)
+        self.assertEqual(len(node.children), 1)
+        self.assertEqual(node.children[0].tag, "p")
+        self.assertEqual(node.children[0].value, "This is a paragraph")
+        self.assertEqual(node.props, {"class": "container"})
+
+    def test_to_html(self):
+        node = ParentNode("div", [LeafNode("p", "This is a paragraph")], {"class": "container"})
+        print(node)
+        print(node.to_html())
+        self.assertEqual(node.to_html(), '<div class="container"><p >This is a paragraph</p></div>')
+
+    def test_to_html_no_tag(self):
+        node = ParentNode(children=[LeafNode("p", "This is a paragraph")], props={"class": "container"})
+        self.assertRaises(ValueError, node.to_html)
+
+    def test_init_no_children(self):
+        self.assertRaises(ValueError, ParentNode, "div", None, {"class": "container"})
 
 
 if __name__ == "__main__":
