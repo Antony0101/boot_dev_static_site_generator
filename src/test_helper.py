@@ -1,6 +1,6 @@
 import unittest
 from textnode import TextNode
-from helper import text_node_to_html_node, split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image,split_nodes_link
+from helper import text_node_to_html_node, split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image,split_nodes_link,text_to_textnodes
 from htmlnode import LeafNode
 
 class TestTextToHtml(unittest.TestCase):
@@ -95,3 +95,26 @@ class TestSplitNodesLink(unittest.TestCase):
             ),
         ]
         self.assertEqual(split_nodes_link(nodes), resultnodes)
+
+
+class TestTextToTextNodes(unittest.TestCase):
+    def test_text_to_textnodes(self):
+        text = "This is a text node"
+        resultnodes = [TextNode("This is a text node", "text")]
+        self.assertEqual(text_to_textnodes(text), resultnodes)
+    
+    def test_text_to_textnodes_2(self):
+        text = "This is **text** with an *italic* word and a `code block` and an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and a [link](https://boot.dev)"
+        resultnodes = [
+            TextNode("This is ", "text"),
+            TextNode("text", "bold"),
+            TextNode(" with an ", "text"),
+            TextNode("italic", "italic"),
+            TextNode(" word and a ", "text"),
+            TextNode("code block", "code"),
+            TextNode(" and an ", "text"),
+            TextNode("image", "image", "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png"),
+            TextNode(" and a ", "text"),
+            TextNode("link", "link", "https://boot.dev"),
+        ]
+        self.assertEqual(text_to_textnodes(text), resultnodes)
