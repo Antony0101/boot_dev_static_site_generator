@@ -1,12 +1,13 @@
 from textnode import TextNode
 import re
+from constants import InlineText, InlineBold, InlineItalic, InlineCode, InlineLink, InlineImage
 
 
 def split_nodes_delimiter(old_nodes:list[TextNode], delimiter, text_type):
     new_nodes = []
     for i in range(len(old_nodes)):
         node = old_nodes[i]
-        if(node.text_type != "text"):
+        if(node.text_type != InlineText):
             new_nodes.append(node)
             continue
         parts = node.text.split(delimiter)
@@ -14,7 +15,7 @@ def split_nodes_delimiter(old_nodes:list[TextNode], delimiter, text_type):
             raise ValueError("Closing Delimiter not found")
         for j in range(len(parts)):
             if(j%2 == 0):
-                new_nodes.append(TextNode(parts[j], "text"))
+                new_nodes.append(TextNode(parts[j], InlineText))
             else:
                 new_nodes.append(TextNode(parts[j], text_type))
     return new_nodes
@@ -32,7 +33,7 @@ def split_nodes_image(old_nodes):
     new_nodes = []
     for i in range(len(old_nodes)):
         node = old_nodes[i]
-        if(node.text_type != "text"):
+        if(node.text_type != InlineText):
             new_nodes.append(node)
             continue
         parts = extract_markdown_images(node.text)
@@ -44,17 +45,17 @@ def split_nodes_image(old_nodes):
             text_splits = text.split(f"![{parts[j][0]}]({parts[j][1]})",1)
             text = text_splits[1]
             if(text_splits[0] != ""):
-                new_nodes.append(TextNode(text_splits[0], "text"))
-            new_nodes.append(TextNode(parts[j][0], "image", parts[j][1]))
+                new_nodes.append(TextNode(text_splits[0], InlineText))
+            new_nodes.append(TextNode(parts[j][0], InlineImage, parts[j][1]))
         if(text != ""):
-            new_nodes.append(TextNode(text, "text"))
+            new_nodes.append(TextNode(text, InlineText))
     return new_nodes
 
 def split_nodes_link(old_nodes):
     new_nodes = []
     for i in range(len(old_nodes)):
         node = old_nodes[i]
-        if(node.text_type != "text"):
+        if(node.text_type != InlineText):
             new_nodes.append(node)
             continue
         parts = extract_markdown_links(node.text)
@@ -66,17 +67,17 @@ def split_nodes_link(old_nodes):
             text_splits = text.split(f"[{parts[j][0]}]({parts[j][1]})",1)
             text = text_splits[1]
             if(text_splits[0] != ""):
-                new_nodes.append(TextNode(text_splits[0], "text"))
-            new_nodes.append(TextNode(parts[j][0], "link", parts[j][1]))
+                new_nodes.append(TextNode(text_splits[0], InlineText))
+            new_nodes.append(TextNode(parts[j][0], InlineLink, parts[j][1]))
         if(text != ""):
-            new_nodes.append(TextNode(text, "text"))
+            new_nodes.append(TextNode(text, InlineText))
     return new_nodes
 
 def text_to_textnodes(text):
-    nodes = [TextNode(text, "text")]
+    nodes = [TextNode(text, InlineText)]
     nodes = split_nodes_image(nodes)
     nodes = split_nodes_link(nodes)
-    nodes = split_nodes_delimiter(nodes, "**", "bold")
-    nodes = split_nodes_delimiter(nodes, "*", "italic")
-    nodes = split_nodes_delimiter(nodes, "`", "code")
+    nodes = split_nodes_delimiter(nodes, "**", InlineBold)
+    nodes = split_nodes_delimiter(nodes, "*", InlineItalic)
+    nodes = split_nodes_delimiter(nodes, "`", InlineCode)
     return nodes

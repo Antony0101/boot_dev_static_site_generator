@@ -2,31 +2,33 @@ import unittest
 from textnode import TextNode
 from convertors import text_node_to_html_node, markdown_to_blocks
 from htmlnode import LeafNode
+from constants import InlineText, InlineBold, InlineItalic, InlineCode, InlineLink, InlineImage
+
 
 
 class TestTextToHtml(unittest.TestCase):
     def test_text_to_html_text(self):
-        text_node = TextNode("This is a text node", "text")
+        text_node = TextNode("This is a text node", InlineText)
         self.assertEqual(text_node_to_html_node(text_node), LeafNode(None, "This is a text node"))
 
     def test_text_to_html_bold(self):
-        text_node = TextNode("This is a text node", "bold")
+        text_node = TextNode("This is a text node", InlineBold)
         self.assertEqual(text_node_to_html_node(text_node), LeafNode("b", "This is a text node"))
 
     def test_text_to_html_italic(self):
-        text_node = TextNode("This is a text node", "italic")
+        text_node = TextNode("This is a text node", InlineItalic)
         self.assertEqual(text_node_to_html_node(text_node), LeafNode("i", "This is a text node"))
 
     def test_text_to_html_code(self):
-        text_node = TextNode("This is a text node", "code")
-        self.assertEqual(text_node_to_html_node(text_node), LeafNode("code", "This is a text node"))
+        text_node = TextNode("This is a text node", InlineCode)
+        self.assertEqual(text_node_to_html_node(text_node), LeafNode(InlineCode, "This is a text node"))
 
     def test_text_to_html_link(self):
-        text_node = TextNode("This is a text node", "link", "https://example.com")
+        text_node = TextNode("This is a text node", InlineLink, "https://example.com")
         self.assertEqual(text_node_to_html_node(text_node), LeafNode("a", "This is a text node", {"href": "https://example.com"}))
 
     def test_text_to_html_image(self):
-        text_node = TextNode("This is a text node", "image", "https://example.com")
+        text_node = TextNode("This is a text node", InlineImage, "https://example.com")
         self.assertEqual(text_node_to_html_node(text_node), LeafNode("img", None, {"src": "https://example.com", "alt": "This is a text node"}))
 
 

@@ -2,16 +2,18 @@ import unittest
 from textnode import TextNode
 from inline_spliters import split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image,split_nodes_link,text_to_textnodes
 from htmlnode import LeafNode
+from constants import InlineText, InlineBold, InlineItalic, InlineCode, InlineLink, InlineImage
+
 
 class TestSplitNodesDelimiter(unittest.TestCase):
     def test_split_nodes_delimiter(self):
-        nodes = [TextNode("This is a *text* node", "text")]
-        resultnodes = [TextNode("This is a ", "text"), TextNode("text", "bold"), TextNode(" node", "text")]
-        self.assertEqual(split_nodes_delimiter(nodes, "*", "bold"), resultnodes)
+        nodes = [TextNode("This is a *text* node", InlineText)]
+        resultnodes = [TextNode("This is a ", InlineText), TextNode(InlineText, InlineBold), TextNode(" node", InlineText)]
+        self.assertEqual(split_nodes_delimiter(nodes, "*", InlineBold), resultnodes)
     
     def test_split_nodes_delimiter_no_closing_delimiter(self):
-        nodes = [TextNode("This is a *text node", "text")]
-        self.assertRaises(ValueError, split_nodes_delimiter, nodes, "*", "bold")
+        nodes = [TextNode("This is a *text node", InlineText)]
+        self.assertRaises(ValueError, split_nodes_delimiter, nodes, "*", InlineBold)
 
 
 class TestExtractMarkdownImages(unittest.TestCase):
@@ -21,7 +23,7 @@ class TestExtractMarkdownImages(unittest.TestCase):
     
     def test_extract_markdown_images_2(self):
         text = "This is text with an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and ![another](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/dfsdkjfd.png)"
-        self.assertEqual(extract_markdown_images(text), [("image", "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png"), ("another", "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/dfsdkjfd.png")] )
+        self.assertEqual(extract_markdown_images(text), [(InlineImage, "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png"), ("another", "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/dfsdkjfd.png")] )
 
 
 class TestExtractMarkdownLinks(unittest.TestCase):
@@ -31,41 +33,41 @@ class TestExtractMarkdownLinks(unittest.TestCase):
     
     def test_extract_markdown_links_2(self):
         text = "This is text with a [link](https://www.example.com) and [another](https://www.example.com/another)"
-        self.assertEqual(extract_markdown_links(text), [("link", "https://www.example.com"), ("another", "https://www.example.com/another")])
+        self.assertEqual(extract_markdown_links(text), [(InlineLink, "https://www.example.com"), ("another", "https://www.example.com/another")])
 
 
 class TestSplitNodesImage(unittest.TestCase):
     def test_split_nodes_image(self):
-        nodes = [TextNode("This is a ![image1](https://example.com/image1.png) node", "text")]
-        resultnodes = [TextNode("This is a ", "text"), TextNode("image1", "image", "https://example.com/image1.png"), TextNode(" node", "text")]
+        nodes = [TextNode("This is a ![image1](https://example.com/image1.png) node", InlineText)]
+        resultnodes = [TextNode("This is a ", InlineText), TextNode("image1", InlineImage, "https://example.com/image1.png"), TextNode(" node", InlineText)]
         self.assertEqual(split_nodes_image(nodes), resultnodes)
     
     def test_split_nodes_image_2(self):
-        nodes = [TextNode("This is text with an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and another ![second image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/3elNhQu.png)","text",)]
+        nodes = [TextNode("This is text with an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and another ![second image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/3elNhQu.png)",InlineText,)]
         resultnodes = [
-            TextNode("This is text with an ", "text"),
-            TextNode("image", "image", "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png"),
-            TextNode(" and another ", "text"),
+            TextNode("This is text with an ", InlineText),
+            TextNode(InlineImage, InlineImage, "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png"),
+            TextNode(" and another ", InlineText),
             TextNode(
-                "second image", "image", "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/3elNhQu.png"
+                "second image", InlineImage, "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/3elNhQu.png"
             ),
         ]
         self.assertEqual(split_nodes_image(nodes), resultnodes)
 
 class TestSplitNodesLink(unittest.TestCase):
     def test_split_nodes_link(self):
-        nodes = [TextNode("This is a [link1](https://example.com/link1) node", "text")]
-        resultnodes = [TextNode("This is a ", "text"), TextNode("link1", "link", "https://example.com/link1"), TextNode(" node", "text")]
+        nodes = [TextNode("This is a [link1](https://example.com/link1) node", InlineText)]
+        resultnodes = [TextNode("This is a ", InlineText), TextNode("link1", InlineLink, "https://example.com/link1"), TextNode(" node", InlineText)]
         self.assertEqual(split_nodes_link(nodes), resultnodes)
     
     def test_split_nodes_link_2(self):
-        nodes = [TextNode("This is text with a [link](https://www.example.com) and another [second link](https://www.example.com/another)","text",)]
+        nodes = [TextNode("This is text with a [link](https://www.example.com) and another [second link](https://www.example.com/another)",InlineText,)]
         resultnodes = [
-            TextNode("This is text with a ", "text"),
-            TextNode("link", "link", "https://www.example.com"),
-            TextNode(" and another ", "text"),
+            TextNode("This is text with a ", InlineText),
+            TextNode(InlineLink, InlineLink, "https://www.example.com"),
+            TextNode(" and another ", InlineText),
             TextNode(
-                "second link", "link", "https://www.example.com/another"
+                "second link", InlineLink, "https://www.example.com/another"
             ),
         ]
         self.assertEqual(split_nodes_link(nodes), resultnodes)
@@ -74,22 +76,22 @@ class TestSplitNodesLink(unittest.TestCase):
 class TestTextToTextNodes(unittest.TestCase):
     def test_text_to_textnodes(self):
         text = "This is a text node"
-        resultnodes = [TextNode("This is a text node", "text")]
+        resultnodes = [TextNode("This is a text node", InlineText)]
         self.assertEqual(text_to_textnodes(text), resultnodes)
     
     def test_text_to_textnodes_2(self):
         text = "This is **text** with an *italic* word and a `code block` and an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and a [link](https://boot.dev)"
         resultnodes = [
-            TextNode("This is ", "text"),
-            TextNode("text", "bold"),
-            TextNode(" with an ", "text"),
-            TextNode("italic", "italic"),
-            TextNode(" word and a ", "text"),
-            TextNode("code block", "code"),
-            TextNode(" and an ", "text"),
-            TextNode("image", "image", "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png"),
-            TextNode(" and a ", "text"),
-            TextNode("link", "link", "https://boot.dev"),
+            TextNode("This is ", InlineText),
+            TextNode(InlineText, InlineBold),
+            TextNode(" with an ", InlineText),
+            TextNode(InlineItalic, InlineItalic),
+            TextNode(" word and a ", InlineText),
+            TextNode("code block", InlineCode),
+            TextNode(" and an ", InlineText),
+            TextNode(InlineImage, InlineImage, "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png"),
+            TextNode(" and a ", InlineText),
+            TextNode(InlineLink, InlineLink, "https://boot.dev"),
         ]
         self.assertEqual(text_to_textnodes(text), resultnodes)
 
