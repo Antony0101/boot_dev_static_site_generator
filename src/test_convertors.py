@@ -2,7 +2,7 @@ import unittest
 from textnode import TextNode
 from convertors import text_node_to_html_node, markdown_to_blocks
 from htmlnode import LeafNode
-from constants import InlineText, InlineBold, InlineItalic, InlineCode, InlineLink, InlineImage
+from constants import *
 
 
 
