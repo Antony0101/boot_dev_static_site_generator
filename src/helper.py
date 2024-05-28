@@ -43,3 +43,16 @@ def generate_html(markdown, template):
     template = template.replace("{{ Title }}", title)
     template = template.replace("{{ Content }}", body.to_html())
     return template
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    for file in os.listdir(dir_path_content):
+        if file.endswith(".md"):
+            print(f"Generating {dest_dir_path}/{file.replace('.md', '.html')}")
+            with open(f"{dir_path_content}/{file}", "r") as f:
+                markdown = f.read()
+                html = generate_html(markdown, template_path)
+                with open(f"{dest_dir_path}/{file.replace('.md', '.html')}", "w") as f:
+                    f.write(html)
+        elif os.path.isdir(f"{dir_path_content}/{file}"):
+            os.makedirs(f"{dest_dir_path}/{file}")
+            generate_pages_recursive(f"{dir_path_content}/{file}", template_path, f"{dest_dir_path}/{file}")

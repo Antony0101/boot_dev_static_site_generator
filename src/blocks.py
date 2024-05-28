@@ -71,7 +71,7 @@ def paragraph_block_to_html_node(paragraph_block):
     lines = paragraph_block.split("\n")
     paragraph = " ".join(lines)
     children = text_to_children(paragraph)
-    print(children)
+    # print(children)
     return ParentNode("p", children, None)
     # if len(children) == 1:
     #     return LeafNode("p", children)
